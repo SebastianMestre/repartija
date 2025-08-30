@@ -1,22 +1,30 @@
+
+const oneDay = 1000 * 60 * 60 * 24;
+
 /* Dummy data to test the simulation */
+
+const today = Date.now();
 
 const lucas = createPerson('Lucas');
 const sebas = createPerson('Sebas');
 const tomas = createPerson('Tomas');
+const gasti = createPerson('Gasti');
+const patin = createPerson('Patin');
 
-const asado = createExpense('Asado', 9000);
+const birras = createExpense('Birras', 12000);
+const facturas = createExpense('Facturas', 14000);
 
-const today = Date.now();
-const oneDay = 1000 * 60 * 60 * 24;
+createPayment(sebas.id, facturas.id, 4000, today - 10 * oneDay);
+createPayment(lucas.id, facturas.id, 10000, today - 10 * oneDay);
 
-createBenefit(sebas.id, asado.id, 3000, today - 10 * oneDay);
-createBenefit(lucas.id, asado.id, 3000, today - 10 * oneDay);
-createBenefit(tomas.id, asado.id, 3000, today - 10 * oneDay);
+createPayment(tomas.id, birras.id, 12000, today - 10 * oneDay);
 
-createPayment(sebas.id, asado.id, 8000, today - 10 * oneDay);
-createPayment(lucas.id, asado.id, 1000, today - 10 * oneDay);
+createBenefit(sebas.id, birras.id, 4000, today - 10 * oneDay);
+createBenefit(lucas.id, birras.id, 4000, today - 10 * oneDay);
+createBenefit(patin.id, birras.id, 4000, today - 10 * oneDay);
 
-createBankTransfer(tomas.id, sebas.id, 3000, today - 5 * oneDay);
+createBenefit(gasti.id, facturas.id, 7000, today - 10 * oneDay);
+createBenefit(tomas.id, facturas.id, 7000, today - 10 * oneDay);
 
 // simulate(today);
 
@@ -32,12 +40,12 @@ function simulate(timestampNow) {
         accounts.set(id, account);
         return account;
     }
-    
+
     const personAccounts = new Map();
     for (const person of persons.values()) {
         personAccounts.set(person.id, createAccount(`${person.name}`));
     }
-    
+
     const expenseAccounts = new Map();
     for (const expense of expenses.values()) {
         expenseAccounts.set(expense.id, createAccount(`[${expense.description}]`));
@@ -94,7 +102,7 @@ function simulate(timestampNow) {
         if (day1 === day2) {
             throw new Error(`Same day, no inflation`);
         }
-        const inflationRate = 1.35; // TODO: use inflation rate reported by INDEC
+        const inflationRate = 0.35; // TODO: use inflation rate reported by INDEC
         const days = day2 - day1;
         return Math.pow(1 + inflationRate, days / 365) - 1;
     }
@@ -124,7 +132,7 @@ function simulate(timestampNow) {
         const delta = balance * inflationRate;
         addTransfer(arsInflation.id, account.id, delta, timestamp, `Inflation from ${formatTimestamp(prevTimestamp)} to ${formatTimestamp(timestamp)}, ${(inflationRate * 100).toFixed(2)}%`, true);
     }
-    
+
     for (const event of events) {
         const timestamp = event.timestamp;
         if (event.eventType === 'end-simulation') {
@@ -150,14 +158,14 @@ function simulate(timestampNow) {
         }
     }
 
-    
+
 
 
     console.log("Transfers:");
     for (const transfer of transfers) {
         console.log(`${accounts.get(transfer.fromAccountId).name} -> ${accounts.get(transfer.toAccountId).name}: ARS ${transfer.amount.toFixed(2)}        \t(${transfer.description})`);
     }
-    
+
     console.log("Balances:");
     for (const account of accounts.values()) {
         console.log(`${account.name}: ARS ${account.balance.toFixed(2)}`);
@@ -175,16 +183,16 @@ function simulate(timestampNow) {
         }
 
         // In the end, the balances of the person accounts should be 0
-        let aaa = Array.from(personAccounts.values());
-        aaa.sort((a, b) => Math.abs(a.balance) - Math.abs(b.balance));
-        
+        let personsByBalance = Array.from(personAccounts.values());
+        personsByBalance.sort((a, b) => Math.abs(a.balance) - Math.abs(b.balance));
+
         let plan = [];
-        for (let i = 1; i < aaa.length; i++) {
-            const amount = aaa[i-1].balance;
-            console.log(`${aaa[i-1].name} -> ${aaa[i].name}: ARS ${amount.toFixed(2)}`);
+        for (let i = 1; i < personsByBalance.length; i++) {
+            const amount = personsByBalance[i-1].balance;
+            console.log(`${personsByBalance[i-1].name} -> ${personsByBalance[i].name}: ARS ${amount.toFixed(2)}`);
             if (amount === 0) continue;
             // we arbitrarily remove the balance from person i-1 by moving it to person i
-            addDirectedTransfer(aaa[i-1].id, aaa[i].id, amount, timestampNow, `Fixing imbalance from ${aaa[i-1].name}`);
+            addDirectedTransfer(personsByBalance[i-1].id, personsByBalance[i].id, amount, timestampNow, `Fixing imbalance from ${personsByBalance[i-1].name}`);
 
         }
     }
@@ -194,7 +202,7 @@ function simulate(timestampNow) {
     for (const transfer of transfers) {
         console.log(`${accounts.get(transfer.fromAccountId).name} -> ${accounts.get(transfer.toAccountId).name}: ARS ${transfer.amount.toFixed(2)}        \t(${transfer.description})`);
     }
-    
+
     console.log("Balances (after fixing imbalances, so should be 0):");
     for (const account of accounts.values()) {
         console.log(`${account.name}: ARS ${account.balance.toFixed(2)}`);

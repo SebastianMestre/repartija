@@ -1,4 +1,4 @@
-/* Dummy data to test the simulation
+/* Dummy data to test the simulation */
 
 const lucas = createPerson('Lucas');
 const sebas = createPerson('Sebas');
@@ -18,9 +18,9 @@ createPayment(lucas.id, asado.id, 1000, today - 10 * oneDay);
 
 createBankTransfer(tomas.id, sebas.id, 3000, today - 5 * oneDay);
 
-simulate(today);
+// simulate(today);
 
-/* */
+/* Main simulation function */
 
 function simulate(timestampNow) {
 

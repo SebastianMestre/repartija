@@ -4,10 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repartito - Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .ui-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .ui-container h2 {
+            color: #444;
+            margin-bottom: 20px;
+        }
+        
+        svg {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .person-rect {
+            fill: #4CAF50;
+            stroke: #2E7D32;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: fill 0.3s;
+        }
+        
+        .person-rect:hover {
+            fill: #66BB6A;
+        }
+        
+        .expense-rect {
+            fill: #FF9800;
+            stroke: #E65100;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: fill 0.3s;
+        }
+        
+        .expense-rect:hover {
+            fill: #FFB74D;
+        }
+        
+        .person-text, .expense-text {
+            font-size: 12px;
+            font-weight: bold;
+            fill: white;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Repartito</h1>
-    <p>Expense tracking app for friend groups</p>
+    <h1>Repartija</h1>
+    <p class="description">Cuentas claras, amistades largas. (como esta)</p>
+    <div class="ui-container">
+        <svg id="main-svg" width="600" height="500">
+            <!-- All elements (people, expenses, and connections) will be added here -->
+        </svg>
+    </div>
     
     <!-- Load all class definitions first -->
     <script src="Person.js"></script>
@@ -21,6 +93,8 @@
     <script src="state.js"></script>
 
     <script src="simulation.js"></script>
+    
+    <script src="ui.js"></script>
     
     <script src="main.js"></script>
 </body>
